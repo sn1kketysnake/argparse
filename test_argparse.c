@@ -52,8 +52,8 @@ main(int argc, const char **argv)
     if (flt_num != 0)
         printf("flt_num: %g\n", flt_num);
     if (argc != 0) {
-        printf("argc: %d\n", argc);
         int i;
+        printf("argc: %d\n", argc);
         for (i = 0; i < argc; i++) {
             printf("argv[%d]: %s\n", i, *(argv + i));
         }

@@ -20,7 +20,7 @@ main(int argc, const char **argv)
     int test = 0;
     int int_num = 0;
     float flt_num = 0.f;
-    const char *path = NULL;
+    char *path = NULL;
     int perms = 0;
     struct argparse_option options[] = {
         OPT_HELP(),

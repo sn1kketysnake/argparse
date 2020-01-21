@@ -3,3 +3,6 @@ test_argparse
 *.[ao]
 *.dylib
 *.so
+Debug
+Release
+*.vcxproj.filters

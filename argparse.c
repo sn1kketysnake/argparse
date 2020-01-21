@@ -101,11 +101,11 @@ argparse_getvalue(struct argparse *self, const struct argparse_option *opt,
     case ARGPARSE_OPT_FLOAT:
         errno = 0;
         if (self->optvalue) {
-            *(float *)opt->value = atof(self->optvalue);
+            *(float *)opt->value = (float)atof(self->optvalue);
             self->optvalue       = NULL;
         } else if (self->argc > 1) {
             self->argc--;
-            *(float *)opt->value = atof(*++self->argv);
+            *(float *)opt->value = (float)atof(*++self->argv);
         } else {
             argparse_error(self, opt, "requires a value", flags);
         }
@@ -278,7 +278,7 @@ unknown:
     }
 
 end:
-    memmove(self->out + self->cpidx, self->argv,
+    memmove((char**)self->out + self->cpidx, self->argv,
             self->argc * sizeof(*self->out));
     self->out[self->cpidx + self->argc] = NULL;
 

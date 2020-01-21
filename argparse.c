@@ -101,11 +101,11 @@ argparse_getvalue(struct argparse *self, const struct argparse_option *opt,
     case ARGPARSE_OPT_FLOAT:
         errno = 0;
         if (self->optvalue) {
-            *(float *)opt->value = strtof(self->optvalue, (char **)&s);
+            *(float *)opt->value = atof(self->optvalue);
             self->optvalue       = NULL;
         } else if (self->argc > 1) {
             self->argc--;
-            *(float *)opt->value = strtof(*++self->argv, (char **)&s);
+            *(float *)opt->value = atof(*++self->argv);
         } else {
             argparse_error(self, opt, "requires a value", flags);
         }
@@ -288,6 +288,10 @@ end:
 void
 argparse_usage(struct argparse *self)
 {
+    const struct argparse_option *options;
+    size_t usage_opts_width = 0;
+    size_t len;
+
     if (self->usages) {
         fprintf(stdout, "Usage: %s\n", *self->usages++);
         while (*self->usages && **self->usages)
@@ -302,11 +306,7 @@ argparse_usage(struct argparse *self)
 
     fputc('\n', stdout);
 
-    const struct argparse_option *options;
-
     // figure out best width
-    size_t usage_opts_width = 0;
-    size_t len;
     options = self->options;
     for (; options->type != ARGPARSE_OPT_END; options++) {
         len = 0;

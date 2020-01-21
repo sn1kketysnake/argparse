@@ -38,6 +38,11 @@ main(int argc, const char **argv)
     };
 
     struct argparse argparse;
+
+    /* Make sure that stdout and stderr print in order by turning off buffering */
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
+
     argparse_init(&argparse, options, usages, 0);
     argparse_describe(&argparse, "\nA brief description of what the program does and how it works.", "\nAdditional description of the program after the description of the arguments.");
     argc = argparse_parse(&argparse, argc, argv);

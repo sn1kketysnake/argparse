@@ -199,11 +199,12 @@ argparse_long_opt(struct argparse *self, const struct argparse_option *options)
 
 int
 argparse_init(struct argparse *self, struct argparse_option *options,
-              const char *const *usages, int flags)
+              const char *const *usages, const char *program, int flags)
 {
     memset(self, 0, sizeof(*self));
     self->options     = options;
     self->usages      = usages;
+    self->program     = program;
     self->flags       = flags;
     self->description = NULL;
     self->epilog      = NULL;
@@ -225,7 +226,8 @@ argparse_parse(struct argparse *self, int argc, const char **argv)
     self->argv = argv + 1;
     self->out  = argv;
 
-    argparse_options_check(self->options);
+    if (self->options)
+        argparse_options_check(self->options);
 
     for (; self->argc; self->argc--, self->argv++) {
         const char *arg = self->argv[0];
@@ -240,6 +242,9 @@ argparse_parse(struct argparse *self, int argc, const char **argv)
         // short option
         if (arg[1] != '-') {
             self->optvalue = arg + 1;
+            if (!self->options)
+                goto unknown;
+
             switch (argparse_short_opt(self, self->options)) {
             case -1:
                 break;
@@ -263,6 +268,8 @@ argparse_parse(struct argparse *self, int argc, const char **argv)
             break;
         }
         // long option
+        if (!self->options)
+            goto unknown;
         switch (argparse_long_opt(self, self->options)) {
         case -1:
             break;
@@ -293,9 +300,10 @@ argparse_usage(struct argparse *self)
     size_t len;
 
     if (self->usages) {
-        fprintf(stdout, "Usage: %s\n", *self->usages++);
+        char *program = self->program ? self->program : "";
+        fprintf(stdout, "Usage: %s %s\n", program, *self->usages++);
         while (*self->usages && **self->usages)
-            fprintf(stdout, "   or: %s\n", *self->usages++);
+            fprintf(stdout, "   or: %s %s\n", program, *self->usages++);
     } else {
         fprintf(stdout, "Usage:\n");
     }
@@ -305,6 +313,9 @@ argparse_usage(struct argparse *self)
         fprintf(stdout, "%s\n", self->description);
 
     fputc('\n', stdout);
+
+    if (!self->options)
+        goto epilog;
 
     // figure out best width
     options = self->options;
@@ -370,7 +381,7 @@ argparse_usage(struct argparse *self)
         fprintf(stdout, "%*s%s\n", pad + 2, "", options->help);
     }
 
-    // print epilog
+epilog:
     if (self->epilog)
         fprintf(stdout, "%s\n", self->epilog);
 }

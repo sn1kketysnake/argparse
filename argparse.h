@@ -89,6 +89,7 @@ struct argparse {
     // user supplied
     const struct argparse_option *options;
     const char *const *usages;
+    const char *program;        // name of program in usage
     int flags;
     const char *description;    // a description after usage
     const char *epilog;         // a description at the end
@@ -117,7 +118,7 @@ int argparse_help_cb(struct argparse *self,
                                      argparse_help_cb, 0, OPT_NONEG)
 
 int argparse_init(struct argparse *self, struct argparse_option *options,
-                  const char *const *usages, int flags);
+                  const char *const *usages, const char *program, int flags);
 void argparse_describe(struct argparse *self, const char *description,
                        const char *epilog);
 int argparse_parse(struct argparse *self, int argc, const char **argv);

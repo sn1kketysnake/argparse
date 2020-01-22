@@ -312,8 +312,6 @@ argparse_usage(struct argparse *self)
     if (self->description)
         fprintf(stdout, "%s\n", self->description);
 
-    fputc('\n', stdout);
-
     if (!self->options)
         goto epilog;
 
